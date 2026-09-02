@@ -1,0 +1,980 @@
+{
+  "users": {
+    "147214852718653@lid": {
+      "userId": "147214852718653@lid",
+      "name": "\ud835\udd78\ud835\udd6c\ud835\udd6f\ud835\udd6c\ud835\udd7d\ud835\udd6c",
+      "class": {
+        "name": "Warrior",
+        "rarity": "common"
+      },
+      "level": 2,
+      "xp": 80,
+      "stats": {
+        "hp": 130,
+        "maxHp": 130,
+        "atk": 18,
+        "def": 12,
+        "energy": 100,
+        "maxEnergy": 100,
+        "maxMana": null,
+        "mana": null
+      },
+      "energyType": "Stamina",
+      "energyColor": "\ud83d\udcaa",
+      "weapon": {
+        "name": "Wooden Sword",
+        "bonus": 5
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Power Strike",
+            "damage": 25,
+            "energyCost": 10,
+            "cooldown": 10,
+            "level": 1,
+            "maxLevel": 5
+          },
+          {
+            "name": "Shield Bash",
+            "damage": 20,
+            "energyCost": 8,
+            "cooldown": 8,
+            "level": 1,
+            "maxLevel": 5
+          }
+        ],
+        "passive": [
+          {
+            "name": "Iron Will",
+            "effect": "+10% DEF"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1
+      },
+      "gold": 100250,
+      "manaCrystals": 2080,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {},
+      "registeredAt": 1771878652623,
+      "pvpElo": 1000,
+      "pvpWins": 0,
+      "pvpLosses": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    },
+    "41700340814048@lid": {
+      "userId": "41700340814048@lid",
+      "name": "\u2670 \u0262\u0585\u029d\u0585 \u2670",
+      "class": {
+        "name": "Devourer",
+        "rarity": "legendary"
+      },
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hp": 11,
+        "maxHp": 110,
+        "atk": 30,
+        "def": 10,
+        "energy": 0,
+        "maxEnergy": 80
+      },
+      "energyType": "Blood",
+      "energyColor": "\ud83e\ude78",
+      "weapon": {
+        "name": "Devourer's Scythe",
+        "bonus": 15
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Soul Devour",
+            "damage": 50,
+            "energyCost": 25,
+            "cooldown": 12,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "lifesteal",
+              "percent": 0.4
+            }
+          },
+          {
+            "name": "Dark Pulse",
+            "damage": 45,
+            "energyCost": 20,
+            "cooldown": 10,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "bleed",
+              "chance": 0.3,
+              "duration": 3
+            }
+          },
+          {
+            "name": "Blood Feast",
+            "damage": 35,
+            "energyCost": 15,
+            "cooldown": 10,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "lifesteal",
+              "percent": 0.5
+            }
+          }
+        ],
+        "passive": [
+          {
+            "name": "Life Steal",
+            "effect": "Heal 20% of damage dealt"
+          },
+          {
+            "name": "Blood Rage",
+            "effect": "+30% ATK when HP < 40%"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1
+      },
+      "gold": 100000,
+      "manaCrystals": 2000,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {
+        "Devourer_Soul Devour": 1771879321118,
+        "Devourer_Dark Pulse": 1771879375167
+      },
+      "registeredAt": 1771878796964,
+      "buffs": [],
+      "pvpBattle": null,
+      "lastSkillUsed": "dark pulse",
+      "pvpWinStreak": 0,
+      "pvpLosses": 1,
+      "pvpElo": 1000,
+      "pvpWins": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    },
+    "194592469209292@lid": {
+      "userId": "194592469209292@lid",
+      "name": "Naruto\ud83c\udf65\ud83d\ude0e\ud83d\ude1d\ud83d\ude1d",
+      "class": {
+        "name": "Berserker",
+        "rarity": "rare"
+      },
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hp": 140,
+        "maxHp": 140,
+        "atk": 25,
+        "def": 6,
+        "energy": 90,
+        "maxEnergy": 90
+      },
+      "energyType": "Rage",
+      "energyColor": "\ud83d\udca2",
+      "weapon": {
+        "name": "Berserker Axe",
+        "bonus": 12
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Rage Strike",
+            "damage": 40,
+            "energyCost": 20,
+            "cooldown": 12,
+            "level": 1,
+            "maxLevel": 5
+          },
+          {
+            "name": "Blood Frenzy",
+            "damage": 35,
+            "energyCost": 18,
+            "cooldown": 10,
+            "level": 1,
+            "maxLevel": 5
+          }
+        ],
+        "passive": [
+          {
+            "name": "Rampage",
+            "effect": "+20% ATK when HP < 50%"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1,
+        "gold": 3750000
+      },
+      "gold": 3750000,
+      "manaCrystals": 2000,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {},
+      "registeredAt": 1771878836200,
+      "pvpElo": 1000,
+      "pvpWins": 0,
+      "pvpLosses": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    },
+    "95000851443902@lid": {
+      "userId": "95000851443902@lid",
+      "name": "yuki",
+      "class": {
+        "name": "DragonKnight",
+        "rarity": "epic"
+      },
+      "level": 3,
+      "xp": 0,
+      "stats": {
+        "hp": 110,
+        "maxHp": 110,
+        "atk": 28,
+        "def": 11,
+        "energy": 125,
+        "maxEnergy": 125,
+        "maxMana": null,
+        "mana": null
+      },
+      "energyType": "Dragon Force",
+      "energyColor": "\ud83d\udc09",
+      "weapon": {
+        "name": "Scaled Blade",
+        "bonus": 17,
+        "attack": 17,
+        "defense": 0
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Dragon Slash",
+            "damage": 45,
+            "energyCost": 22,
+            "cooldown": 13,
+            "level": 1,
+            "maxLevel": 5
+          },
+          {
+            "name": "Dragon Roar",
+            "damage": 30,
+            "energyCost": 18,
+            "cooldown": 11,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "stun",
+              "chance": 0.3,
+              "duration": 2
+            }
+          },
+          {
+            "name": "Flame Breath",
+            "damage": 40,
+            "energyCost": 20,
+            "cooldown": 12,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "burn",
+              "chance": 0.5,
+              "duration": 3
+            }
+          }
+        ],
+        "passive": [
+          {
+            "name": "Dragon Scales",
+            "effect": "+20% DEF"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1,
+        "gold": 1089880
+      },
+      "gold": 1089880,
+      "manaCrystals": 2120,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {},
+      "registeredAt": 1771878845508,
+      "pvpElo": 1000,
+      "pvpWins": 0,
+      "pvpLosses": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    },
+    "221951679328499@lid": {
+      "userId": "221951679328499@lid",
+      "name": "Senku-Sama",
+      "class": {
+        "name": "Senku",
+        "rarity": "divine"
+      },
+      "level": 3,
+      "xp": 105,
+      "stats": {
+        "hp": 32,
+        "maxHp": 163,
+        "atk": 45,
+        "def": 17,
+        "energy": 11,
+        "maxEnergy": 114
+      },
+      "energyType": "Science",
+      "energyColor": "\u2697\ufe0f",
+      "weapon": {
+        "name": "Kingdom of Science Staff",
+        "bonus": 20
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Nitro Burst",
+            "damage": 65,
+            "energyCost": 28,
+            "cooldown": 12,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "burn",
+              "chance": 0.6,
+              "duration": 3
+            }
+          },
+          {
+            "name": "10 Billion%",
+            "damage": 80,
+            "energyCost": 35,
+            "cooldown": 15,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "stun",
+              "chance": 0.5,
+              "duration": 2
+            }
+          },
+          {
+            "name": "Stone Formula",
+            "damage": 55,
+            "energyCost": 22,
+            "cooldown": 10,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "freeze",
+              "chance": 0.55,
+              "duration": 3
+            }
+          },
+          {
+            "name": "Revival Serum",
+            "damage": 0,
+            "energyCost": 30,
+            "cooldown": 18,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "lifesteal",
+              "percent": 0.75
+            }
+          },
+          {
+            "name": "Senku Overdrive",
+            "damage": 95,
+            "energyCost": 45,
+            "cooldown": 20,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "bleed",
+              "chance": 0.7,
+              "duration": 4
+            }
+          }
+        ],
+        "passive": [
+          {
+            "name": "Scientific Genius",
+            "effect": "+40% Skill Damage"
+          },
+          {
+            "name": "Immortal Formula",
+            "effect": "Heal 30% of damage dealt"
+          },
+          {
+            "name": "10 Billion% Resolve",
+            "effect": "+50% ATK when HP < 30%"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1,
+        "gold": 500000001424
+      },
+      "gold": 500000001424,
+      "manaCrystals": 1000000010,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {
+        "Senku_Nitro Burst": 1771879321220,
+        "Senku_Senku Overdrive": 1771879374166,
+        "Senku_Revival Serum": 1771879440397
+      },
+      "registeredAt": 1771879174777,
+      "buffs": [],
+      "pvpBattle": null,
+      "lastSkillUsed": "revival serum",
+      "pvpWins": 1,
+      "pvpWinStreak": 1,
+      "statAllocations": {
+        "hp": 0,
+        "atk": 0,
+        "def": 0,
+        "magicPower": 0,
+        "speed": 0,
+        "critChance": 0,
+        "critDamage": 0,
+        "lifesteal": 0
+      },
+      "upgradePoints": 16,
+      "baseStats": {
+        "hp": 163,
+        "atk": 45,
+        "def": 17,
+        "magicPower": 0,
+        "speed": 100,
+        "critChance": 0,
+        "critDamage": 0,
+        "lifesteal": 0,
+        "maxEnergy": 114
+      },
+      "pvpElo": 1000,
+      "pvpLosses": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    },
+    "108607408447652@lid": {
+      "userId": "108607408447652@lid",
+      "name": "Naruto",
+      "class": {
+        "name": "Archer",
+        "rarity": "common"
+      },
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hp": 100,
+        "maxHp": 100,
+        "atk": 18,
+        "def": 8,
+        "energy": 110,
+        "maxEnergy": 110
+      },
+      "energyType": "Focus",
+      "energyColor": "\ud83c\udfaf",
+      "weapon": {
+        "name": "Hunter's Bow",
+        "bonus": 7
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Arrow Barrage",
+            "damage": 28,
+            "energyCost": 12,
+            "cooldown": 10,
+            "level": 1,
+            "maxLevel": 5
+          },
+          {
+            "name": "Headshot",
+            "damage": 35,
+            "energyCost": 18,
+            "cooldown": 12,
+            "level": 1,
+            "maxLevel": 5
+          }
+        ],
+        "passive": [
+          {
+            "name": "Eagle Eye",
+            "effect": "+10% Critical Chance"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1
+      },
+      "gold": 100000,
+      "manaCrystals": 2000,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {},
+      "registeredAt": 1771879329025,
+      "pvpElo": 1000,
+      "pvpWins": 0,
+      "pvpLosses": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    },
+    "87991431229635@lid": {
+      "userId": "87991431229635@lid",
+      "name": "gojo",
+      "class": {
+        "name": "DragonKnight",
+        "rarity": "epic"
+      },
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hp": 150,
+        "maxHp": 150,
+        "atk": 28,
+        "def": 14,
+        "energy": 125,
+        "maxEnergy": 125
+      },
+      "energyType": "Dragon Force",
+      "energyColor": "\ud83d\udc09",
+      "weapon": {
+        "name": "Dragon Blade",
+        "bonus": 15
+      },
+      "skills": {
+        "active": [
+          {
+            "name": "Dragon Slash",
+            "damage": 45,
+            "energyCost": 22,
+            "cooldown": 13,
+            "level": 1,
+            "maxLevel": 5
+          },
+          {
+            "name": "Dragon Roar",
+            "damage": 30,
+            "energyCost": 18,
+            "cooldown": 11,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "stun",
+              "chance": 0.3,
+              "duration": 2
+            }
+          },
+          {
+            "name": "Flame Breath",
+            "damage": 40,
+            "energyCost": 20,
+            "cooldown": 12,
+            "level": 1,
+            "maxLevel": 5,
+            "effect": {
+              "type": "burn",
+              "chance": 0.5,
+              "duration": 3
+            }
+          }
+        ],
+        "passive": [
+          {
+            "name": "Dragon Scales",
+            "effect": "+20% DEF"
+          }
+        ],
+        "ultimate": null
+      },
+      "inventory": {
+        "healthPotions": 3,
+        "manaPotions": 0,
+        "energyPotions": 0,
+        "reviveTokens": 1
+      },
+      "gold": 100000,
+      "manaCrystals": 2000,
+      "artifacts": {
+        "inventory": [],
+        "equipped": {
+          "weapon": null,
+          "armor": null,
+          "helmet": null,
+          "gloves": null,
+          "ring": null,
+          "amulet": null,
+          "tome": null,
+          "boots": null
+        }
+      },
+      "dungeon": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "gatesCleared": 0
+      },
+      "boss": {
+        "currentBattle": null,
+        "cooldownUntil": 0,
+        "bossesDefeated": 0
+      },
+      "pvp": {
+        "wins": 0,
+        "losses": 0,
+        "rank": "Unranked"
+      },
+      "dailyQuest": {
+        "lastClaimed": 0,
+        "streak": 0
+      },
+      "statusEffects": [],
+      "comboCount": 0,
+      "lastSkillUse": {},
+      "skillCooldowns": {},
+      "registeredAt": 1771879358508,
+      "pvpElo": 1000,
+      "pvpWins": 0,
+      "pvpLosses": 0,
+      "pvpStreak": 0,
+      "titles": [],
+      "bannerState": {},
+      "summonArtifacts": [],
+      "summonWeapons": {},
+      "battlePass": null,
+      "constellations": {}
+    }
+  },
+  "banlist": {},
+  "dailyQuests": {
+    "147214852718653@lid": "Mon Feb 23 2026",
+    "95000851443902@lid": "Mon Feb 23 2026"
+  },
+  "antiLinkStrikes": {},
+  "groupSettings": {
+    "194592469209292@lid": {
+      "antiLink": false,
+      "slowmode": 0
+    },
+    "120363423579218327@g.us": {
+      "antiLink": false,
+      "slowmode": 0
+    },
+    "120363425132123937@g.us": {
+      "antiLink": false,
+      "slowmode": 0
+    },
+    "120363404249199275@g.us": {
+      "slowmode": 0
+    },
+    "120363404936096666@g.us": {
+      "slowmode": 0
+    },
+    "120363423154334715@g.us": {
+      "slowmode": 0
+    },
+    "120363424191606221@g.us": {
+      "slowmode": 0
+    },
+    "120363404035419534@g.us": {
+      "slowmode": 0
+    },
+    "120363405619360310@g.us": {
+      "slowmode": 0
+    },
+    "132951115317490@lid": {
+      "antiLink": false,
+      "slowmode": 0
+    },
+    "51991250231543@lid": {
+      "antiLink": false,
+      "slowmode": 0
+    }
+  },
+  "afkUsers": {},
+  "system": {
+    "maintenance": false
+  },
+  "disabledCommands": [
+    {
+      "name": "hakai",
+      "by": "194592469209292@lid"
+    }
+  ],
+  "botAdmins": [
+    "221951679328499@lid"
+  ],
+  "guilds": {},
+  "guildInvites": {},
+  "banks": {},
+  "bannedUsers": {},
+  "userCooldowns": {},
+  "lastCommand": {},
+  "pendingTrades": {},
+  "subscribers": {},
+  "bypassCooldowns": {},
+  "christmasEvent": {},
+  "seasonStart": 1773909513554,
+  "pendingChallenges": {}
+}

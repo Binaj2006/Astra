@@ -1,0 +1,19 @@
+{
+  "221951679328499@lid": {
+    "unlocked": [
+      "first_victory"
+    ],
+    "progress": {
+      "first_victory": 1,
+      "arena_regular": 1,
+      "pvp_veteran": 1,
+      "pvp_legend": 1,
+      "achievement_hunter_10": 1,
+      "achievement_hunter_50": 1,
+      "completionist": 1
+    },
+    "totalGoldEarned": 1000,
+    "totalXpEarned": 300,
+    "totalCrystalsEarned": 5
+  }
+}

@@ -1,0 +1,663 @@
+/**
+ * ╔══════════════════════════════════════════════════════╗
+ * ║         AniRPG — Utility Commands                    ║
+ * ║  /imagine /yt /lyrics /pinterest /math /search      ║
+ * ╚══════════════════════════════════════════════════════╝
+ *
+ * All utility — completely separate from RPG gameplay.
+ *
+ * Env vars needed:
+ *   GENIUS_TOKEN     — Genius API token (for lyrics)
+ *   (YouTube uses yt-dlp CLI — must be installed on server)
+ *   (Image gen uses Pollinations.ai — no key needed)
+ *   (Pinterest uses public RSS — no key needed)
+ *   (Math/Search uses AI — uses GROQ_API_KEY)
+ */
+
+'use strict';
+
+const https  = require('https');
+const http   = require('http');
+const fs     = require('fs');
+const path   = require('path');
+const { execFile } = require('child_process');
+
+// __dirname here is anirpg/commands/rpg/ — go up two levels to project root
+const ROOT_DIR = path.join(__dirname, '..', '..');
+const TMP_DIR  = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'tmp')
+  : path.join(ROOT_DIR, 'tmp');
+
+// ── Tavily real-time search helper ────────────────────────────────────────────
+async function tavilySearch(query, apiKey) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      api_key: apiKey,
+      query,
+      search_depth: 'basic',
+      max_results: 5,
+      include_answer: true,
+    });
+
+    const req = https.request({
+      hostname: 'api.tavily.com',
+      path: '/search',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body),
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          if (json.error) return reject(new Error(json.error));
+
+          // Build response from Tavily's answer + top results
+          const lines = [];
+
+          if (json.answer) {
+            lines.push(json.answer);
+          }
+
+          if (json.results?.length) {
+            lines.push('');
+            json.results.slice(0, 3).forEach(r => {
+              lines.push(`📌 *${r.title}*`);
+              if (r.content) lines.push(r.content.slice(0, 150) + (r.content.length > 150 ? '...' : ''));
+              lines.push(`🔗 ${r.url}`);
+              lines.push('');
+            });
+          }
+
+          resolve(lines.join('\n').trim() || 'No results found.');
+        } catch(e) {
+          reject(new Error('Failed to parse Tavily response'));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+// ── HTTP helpers ──────────────────────────────────────────────────────────────
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https') ? https : http;
+    lib.get(url, { headers: { 'User-Agent': 'AniRPG/1.0' } }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch(e) { reject(new Error('JSON parse failed')); }
+      });
+    }).on('error', reject);
+  });
+}
+
+function fetchBuffer(url) {
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https') ? https : http;
+    const req = lib.get(url, { headers: { 'User-Agent': 'AniRPG/1.0' } }, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return fetchBuffer(res.headers.location).then(resolve).catch(reject);
+      }
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => resolve({ buffer: Buffer.concat(chunks), contentType: res.headers['content-type'] || '' }));
+    });
+    req.on('error', reject);
+  });
+}
+
+// ── /imagine — Pollinations.ai image generation ───────────────────────────────
+const imagine = {
+  name: 'imagine',
+  aliases: ['img', 'gen', 'draw'],
+  description: 'Generate an AI image from a prompt',
+  usage: '/imagine <prompt>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /imagine <prompt>\nExample: /imagine Shadow Monarch Sung Jin-Woo standing in darkness',
+      }, { quoted: msg });
+    }
+
+    const prompt = args.join(' ');
+    const encodedPrompt = encodeURIComponent(prompt);
+    const seed = Math.floor(Math.random() * 999999);
+
+    // Pollinations.ai — free, no key needed
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=768&seed=${seed}&nologo=true`;
+
+    await sock.sendMessage(chatId, {
+      text: `🎨 *Generating...*\n"${prompt}"`,
+    }, { quoted: msg });
+
+    try {
+      const { buffer, contentType } = await fetchBuffer(imageUrl);
+
+      await sock.sendMessage(chatId, {
+        image: buffer,
+        caption: `🎨 *${prompt}*\n\n_Generated by Pollinations.ai_`,
+        mimetype: contentType.includes('png') ? 'image/png' : 'image/jpeg',
+      }, { quoted: msg });
+
+    } catch (err) {
+      console.error('❌ Image gen error:', err.message);
+      await sock.sendMessage(chatId, {
+        text: `❌ Failed to generate image. Try again!\n\n💡 Tip: Make your prompt more specific.`,
+      }, { quoted: msg });
+    }
+  },
+};
+
+// ── /yt — YouTube audio download via yt-dlp ──────────────────────────────────
+const yt = {
+  name: 'yt',
+  aliases: ['ytmp3', 'audio', 'song'],
+  description: 'Download YouTube audio',
+  usage: '/yt <youtube url or search query>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /yt <YouTube URL or song name>\nExample: /yt Jujutsu Kaisen OP',
+      }, { quoted: msg });
+    }
+
+    const input = args.join(' ');
+    const isUrl = input.startsWith('http');
+
+    await sock.sendMessage(chatId, {
+      text: `🎵 *Fetching audio...*\n${isUrl ? input : `"${input}"`}`,
+    }, { quoted: msg });
+
+    const tmpDir = TMP_DIR;
+    fs.mkdirSync(tmpDir, { recursive: true });
+    const outTemplate = path.join(tmpDir, `yt_${Date.now()}.%(ext)s`);
+
+    // Search query or direct URL
+    const ytInput = isUrl ? input : `ytsearch1:${input}`;
+
+    const ytdlpArgs = [
+      '--no-playlist',
+      '--extract-audio',
+      '--audio-format', 'mp3',
+      '--audio-quality', '128K',
+      '--max-filesize', '25m',    // WhatsApp 25MB limit
+      '--output', outTemplate,
+      '--print', 'after_move:filepath', // print final path
+      ytInput,
+    ];
+
+    const mp3Path = await new Promise((resolve, reject) => {
+      execFile('yt-dlp', ytdlpArgs, { timeout: 90000 }, (err, stdout, stderr) => {
+        if (err) return reject(new Error(stderr || err.message));
+        const finalPath = stdout.trim().split('\n').pop();
+        resolve(finalPath);
+      });
+    }).catch(err => {
+      console.error('❌ yt-dlp error:', err.message);
+      return null;
+    });
+
+    if (!mp3Path || !fs.existsSync(mp3Path)) {
+      return sock.sendMessage(chatId, {
+        text: `❌ Could not download audio.\n\n💡 Make sure yt-dlp is installed:\nnpm install -g yt-dlp\nor: pip install yt-dlp`,
+      }, { quoted: msg });
+    }
+
+    try {
+      const audioBuffer = fs.readFileSync(mp3Path);
+      const fileName = path.basename(mp3Path);
+
+      await sock.sendMessage(chatId, {
+        audio: audioBuffer,
+        mimetype: 'audio/mpeg',
+        fileName: fileName,
+        ptt: false,
+      }, { quoted: msg });
+
+    } finally {
+      // Cleanup temp file
+      try { fs.unlinkSync(mp3Path); } catch(e) {}
+    }
+  },
+};
+
+// ── /lyrics — Genius API ──────────────────────────────────────────────────────
+const lyrics = {
+  name: 'lyrics',
+  aliases: ['lyric', 'lrc'],
+  description: 'Fetch song lyrics from Genius',
+  usage: '/lyrics <song name>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /lyrics <song name>\nExample: /lyrics Shinzou wo Sasageyo',
+      }, { quoted: msg });
+    }
+
+    const token = process.env.GENIUS_TOKEN;
+    if (!token) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Genius API token not configured.\nAsk the owner to add GENIUS_TOKEN to .env',
+      }, { quoted: msg });
+    }
+
+    const query = args.join(' ');
+
+    try {
+      const searchUrl = `https://api.genius.com/search?q=${encodeURIComponent(query)}&access_token=${token}`;
+      const data = await fetchJson(searchUrl);
+
+      const hit = data?.response?.hits?.[0]?.result;
+      if (!hit) {
+        return sock.sendMessage(chatId, {
+          text: `❌ No results found for: "${query}"`,
+        }, { quoted: msg });
+      }
+
+      const title    = hit.full_title;
+      const artist   = hit.primary_artist?.name;
+      const pageUrl  = hit.url;
+
+      // Genius doesn't serve lyrics via API — give rich info + link
+      return sock.sendMessage(chatId, {
+        text: [
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          `🎵 *${title}*`,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+          ``,
+          `🎤 Artist: ${artist}`,
+          `🔗 Full Lyrics:`,
+          pageUrl,
+          ``,
+          `━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+        ].join('\n'),
+      }, { quoted: msg });
+
+    } catch (err) {
+      console.error('❌ Lyrics error:', err.message);
+      return sock.sendMessage(chatId, {
+        text: '❌ Failed to fetch lyrics. Try again.',
+      }, { quoted: msg });
+    }
+  },
+};
+
+// ── /pinterest — fetch images from Pinterest ─────────────────────────────────
+const pinterest = {
+  name: 'pinterest',
+  aliases: ['pin', 'pins'],
+  description: 'Search and send images from Pinterest',
+  usage: '/pinterest <query>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /pinterest <query>\nExample: /pinterest Solo Leveling fanart',
+      }, { quoted: msg });
+    }
+
+    const query = args.join(' ');
+
+    await sock.sendMessage(chatId, {
+      text: `📌 *Searching Pinterest...*\n"${query}"`,
+    }, { quoted: msg });
+
+    try {
+      // Pinterest public RSS feed
+      const feedUrl = `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(query)}&rs=typed`;
+
+      // Use Pinterest's open graph / CDN approach via their JSON endpoint
+      const apiUrl = `https://www.pinterest.com/resource/BaseSearchResource/get/?data=%7B%22options%22%3A%7B%22query%22%3A%22${encodeURIComponent(query)}%22%2C%22scope%22%3A%22pins%22%7D%7D&_=${Date.now()}`;
+
+      const data = await fetchJson(apiUrl).catch(() => null);
+
+      // Try to extract image URLs from Pinterest results
+      let imageUrls = [];
+      if (data?.resource_response?.data?.results) {
+        imageUrls = data.resource_response.data.results
+          .filter(p => p.images?.orig?.url)
+          .map(p => p.images.orig.url)
+          .slice(0, 3);
+      }
+
+      if (imageUrls.length === 0) {
+        // Fallback: direct Pollinations search (uses same image quality)
+        return sock.sendMessage(chatId, {
+          text: [
+            `📌 *Pinterest: "${query}"*`,
+            ``,
+            `🔗 View results directly:`,
+            `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(query)}`,
+          ].join('\n'),
+        }, { quoted: msg });
+      }
+
+      // Send first found image
+      const { buffer } = await fetchBuffer(imageUrls[0]);
+      await sock.sendMessage(chatId, {
+        image: buffer,
+        caption: `📌 *Pinterest: ${query}*\n\n🔗 More: https://pinterest.com/search/pins/?q=${encodeURIComponent(query)}`,
+      }, { quoted: msg });
+
+    } catch (err) {
+      console.error('❌ Pinterest error:', err.message);
+      return sock.sendMessage(chatId, {
+        text: `📌 *Pinterest: "${query}"*\n\n🔗 https://www.pinterest.com/search/pins/?q=${encodeURIComponent(query)}`,
+      }, { quoted: msg });
+    }
+  },
+};
+
+// ── /math — AI-powered math solver ───────────────────────────────────────────
+const math = {
+  name: 'math',
+  aliases: ['calc', 'solve'],
+  description: 'Solve math problems with AI',
+  usage: '/math <expression or problem>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /math <problem>\nExample: /math integrate x^2 from 0 to 3',
+      }, { quoted: msg });
+    }
+
+    const problem = args.join(' ');
+
+    // Try simple eval first for basic arithmetic
+    const simpleMatch = problem.match(/^[\d\s+\-*/().^%]+$/);
+    if (simpleMatch) {
+      try {
+        // Safe eval for simple expressions
+        const sanitized = problem.replace(/\^/g, '**');
+        // eslint-disable-next-line no-new-func
+        const result = new Function(`return (${sanitized})`)();
+        if (!isNaN(result) && isFinite(result)) {
+          return sock.sendMessage(chatId, {
+            text: `🧮 *Math Result*\n\n${problem} = *${result}*`,
+          }, { quoted: msg });
+        }
+      } catch(e) {}
+    }
+
+    // Complex problems — use Groq AI
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      return sock.sendMessage(chatId, {
+        text: '❌ AI math solver not configured (GROQ_API_KEY missing).',
+      }, { quoted: msg });
+    }
+
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: 'llama3-8b-8192',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a math solver. Solve the given problem step by step. Be concise. Show the final answer clearly at the end. Use plain text only, no markdown code blocks.',
+            },
+            { role: 'user', content: problem },
+          ],
+          max_tokens: 400,
+          temperature: 0.1,
+        }),
+      });
+
+      const data = await response.json();
+      const answer = data.choices?.[0]?.message?.content?.trim();
+
+      if (!answer) throw new Error('No answer');
+
+      return sock.sendMessage(chatId, {
+        text: `🧮 *${problem}*\n\n${answer}`,
+      }, { quoted: msg });
+
+    } catch (err) {
+      console.error('❌ Math AI error:', err.message);
+      return sock.sendMessage(chatId, {
+        text: '❌ Could not solve that. Try rephrasing.',
+      }, { quoted: msg });
+    }
+  },
+};
+
+// ── /search — Tavily real-time web search ─────────────────────────────────────
+const search = {
+  name: 'search',
+  aliases: ['ask', 'google', 'query', 'web'],
+  description: 'Search the web for real-time information',
+  usage: '/search <question>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /search <question>\nExample: /search latest Solo Leveling anime news',
+      }, { quoted: msg });
+    }
+
+    const question = args.join(' ');
+    const apiKey = process.env.TAVILY_API_KEY;
+
+    if (!apiKey) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Search not configured (TAVILY_API_KEY missing).',
+      }, { quoted: msg });
+    }
+
+    await sock.sendMessage(chatId, {
+      text: `🔍 *Searching...*\n"${question}"`,
+    }, { quoted: msg });
+
+    try {
+      const result = await tavilySearch(question, apiKey);
+      return sock.sendMessage(chatId, {
+        text: `🔍 *${question}*\n\n${result}`,
+      }, { quoted: msg });
+    } catch (err) {
+      console.error('❌ Search error:', err.message);
+      return sock.sendMessage(chatId, {
+        text: '❌ Search failed. Try again.',
+      }, { quoted: msg });
+    }
+  },
+};
+
+// ── /tt — TikTok video download via yt-dlp ───────────────────────────────────
+const tt = {
+  name: 'tt',
+  aliases: ['tiktok', 'tok'],
+  description: 'Download a TikTok video',
+  usage: '/tt <tiktok url>',
+  category: 'utility',
+
+  async execute(sock, msg, args, getDatabase, saveDatabase, sender) {
+    const chatId = msg.key.remoteJid;
+
+    if (args.length === 0 || !args[0].includes('tiktok.com')) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Usage: /tt <TikTok URL>\nExample: /tt https://www.tiktok.com/@user/video/123',
+      }, { quoted: msg });
+    }
+
+    const url = args[0].trim();
+
+    await sock.sendMessage(chatId, {
+      text: '⬇️ *Downloading TikTok...*',
+    }, { quoted: msg });
+
+    const tmpDir = TMP_DIR;
+    fs.mkdirSync(tmpDir, { recursive: true });
+    const outPath = path.join(tmpDir, `tt_${Date.now()}.mp4`);
+
+    const result = await new Promise((resolve) => {
+      execFile('yt-dlp', [
+        '--no-playlist',
+        '--format', 'mp4/best[ext=mp4]/best',
+        '--max-filesize', '60m',
+        '--output', outPath,
+        '--no-warnings',
+        url,
+      ], { timeout: 90000 }, (err, stdout, stderr) => {
+        if (err) return resolve({ success: false, error: stderr || err.message });
+        resolve({ success: true });
+      });
+    });
+
+    if (!result.success || !fs.existsSync(outPath)) {
+      return sock.sendMessage(chatId, {
+        text: `❌ Failed to download TikTok.\n\n💡 Make sure:\n• yt-dlp is installed and updated\n• The URL is a public video\n\nUpdate yt-dlp: \`pip install -U yt-dlp\``,
+      }, { quoted: msg });
+    }
+
+    try {
+      const videoBuffer = fs.readFileSync(outPath);
+      await sock.sendMessage(chatId, {
+        video: videoBuffer,
+        mimetype: 'video/mp4',
+        caption: '📱 Downloaded via AniRPG',
+      }, { quoted: msg });
+    } finally {
+      try { fs.unlinkSync(outPath); } catch(e) {}
+    }
+  },
+};
+
+// ── !mp3 reply handler ────────────────────────────────────────────────────────
+// Not a slash command — triggered when user replies to any media message with "!mp3"
+// Called directly from the message handler in index.js / MultiSocketManager
+async function handleMp3Reply(sock, msg, chatId) {
+  // Get the quoted message
+  const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+  if (!quoted) {
+    return sock.sendMessage(chatId, {
+      text: '❌ Reply to a video or audio message with *!mp3* to extract the audio.',
+    }, { quoted: msg });
+  }
+
+  // Check quoted message type
+  const videoMsg  = quoted.videoMessage;
+  const audioMsg  = quoted.audioMessage;
+  const docMsg    = quoted.documentMessage;
+
+  if (!videoMsg && !audioMsg && !docMsg) {
+    return sock.sendMessage(chatId, {
+      text: '❌ That message doesn\'t contain extractable media.\n\nReply to a *video* or *audio* message.',
+    }, { quoted: msg });
+  }
+
+  await sock.sendMessage(chatId, {
+    text: '🎵 *Extracting audio...*',
+  }, { quoted: msg });
+
+  try {
+    // Download the quoted media — Baileys v7 uses @whiskeysockets/baileys
+    let downloadMediaMessage;
+    try {
+      ({ downloadMediaMessage } = require('@whiskeysockets/baileys'));
+    } catch(e) {
+      console.error('Failed to load @whiskeysockets/baileys:', e.message);
+      return sock.sendMessage(chatId, {
+        text: '❌ Media download module not available.',
+      }, { quoted: msg });
+    }
+    const quotedMsg = {
+      key: {
+        remoteJid: chatId,
+        id: msg.message.extendedTextMessage.contextInfo.stanzaId,
+        participant: msg.message.extendedTextMessage.contextInfo.participant,
+      },
+      message: quoted,
+    };
+
+    const mediaBuffer = await downloadMediaMessage(quotedMsg, 'buffer', {});
+
+    if (!mediaBuffer || mediaBuffer.length === 0) {
+      return sock.sendMessage(chatId, {
+        text: '❌ Could not download the media. It may have expired.',
+      }, { quoted: msg });
+    }
+
+    const tmpDir = TMP_DIR;
+    fs.mkdirSync(tmpDir, { recursive: true });
+    const stamp    = Date.now();
+    const inPath   = path.join(tmpDir, `mp3_in_${stamp}.mp4`);
+    const outPath  = path.join(tmpDir, `mp3_out_${stamp}.mp3`);
+
+    fs.writeFileSync(inPath, mediaBuffer);
+
+    // Use ffmpeg to extract audio
+    const ffmpegResult = await new Promise((resolve) => {
+      execFile('ffmpeg', [
+        '-i', inPath,
+        '-vn',                  // no video
+        '-acodec', 'libmp3lame',
+        '-ab', '128k',
+        '-y',                   // overwrite
+        outPath,
+      ], { timeout: 60000 }, (err, stdout, stderr) => {
+        if (err) return resolve({ success: false, error: err.message });
+        resolve({ success: true });
+      });
+    });
+
+    // Cleanup input
+    try { fs.unlinkSync(inPath); } catch(e) {}
+
+    if (!ffmpegResult.success || !fs.existsSync(outPath)) {
+      // ffmpeg not available — try yt-dlp as fallback on URL-based media
+      return sock.sendMessage(chatId, {
+        text: '❌ Audio extraction failed.\n\n💡 Make sure *ffmpeg* is installed:\n`apt install ffmpeg` or `brew install ffmpeg`',
+      }, { quoted: msg });
+    }
+
+    const audioBuffer = fs.readFileSync(outPath);
+    try { fs.unlinkSync(outPath); } catch(e) {}
+
+    await sock.sendMessage(chatId, {
+      audio: audioBuffer,
+      mimetype: 'audio/mpeg',
+      fileName: `audio_${stamp}.mp3`,
+      ptt: false,
+    }, { quoted: msg });
+
+  } catch (err) {
+    console.error('❌ !mp3 error:', err.message);
+    await sock.sendMessage(chatId, {
+      text: '❌ Something went wrong extracting audio. Try again.',
+    }, { quoted: msg });
+  }
+}
+module.exports = { imagine, yt, tt, lyrics, pinterest, math, search, handleMp3Reply };

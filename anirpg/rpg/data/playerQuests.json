@@ -1,0 +1,64 @@
+{
+  "p1": {
+    "active": {
+      "prologue_awakening": {
+        "id": "prologue_awakening",
+        "name": "🌟 The Awakening",
+        "description": "A mysterious power stirs within you. Prove yourself worthy by completing basic training.",
+        "type": "story",
+        "chapter": 1,
+        "level": 1,
+        "objectives": [
+          {
+            "type": "kill",
+            "target": "any",
+            "count": 5,
+            "current": 0,
+            "desc": "Defeat 5 monsters"
+          },
+          {
+            "type": "skill_use",
+            "count": 3,
+            "current": 0,
+            "desc": "Use any skill 3 times"
+          },
+          {
+            "type": "level",
+            "level": 2,
+            "current": 0,
+            "desc": "Reach level 2",
+            "count": 1
+          }
+        ],
+        "rewards": {
+          "exp": 100,
+          "gold": 72,
+          "items": [
+            {
+              "name": "Beginner's Sword",
+              "type": "weapon",
+              "rarity": "common"
+            }
+          ],
+          "unlocks": [
+            "prologue_first_dungeon"
+          ]
+        },
+        "dialogue": {
+          "start": "🌟 *A voice echoes in your mind...*\n\n\"Chosen one, your journey begins. Show me your strength.\"",
+          "complete": "🎊 \"Excellent! You've proven yourself. But this is only the beginning...\"",
+          "inProgress": "⚔️ Continue your training, warrior."
+        },
+        "category": "story",
+        "startTime": 1784971827820
+      }
+    },
+    "completed": [],
+    "available": [],
+    "dailyReset": 1785058227819,
+    "weeklyReset": 1785576627819,
+    "reputation": {},
+    "achievements": [],
+    "titles": []
+  }
+}
